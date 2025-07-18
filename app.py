@@ -4,6 +4,7 @@ from openai import OpenAI
 
 # Initialize OpenAI client using Streamlit secrets
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+st.write("Key loaded:", "OPENAI_API_KEY" in st.secrets)
 
 st.set_page_config(page_title="AIMA - CAP Module", layout="centered")
 st.title("🧠 AIMA: AI Infection Management Assistant")
