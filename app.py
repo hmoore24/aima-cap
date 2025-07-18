@@ -41,6 +41,7 @@ exam = st.text_area("Physical Exam Findings")
 
 allergy_options = ["Penicillin", "Cephalosporins", "Macrolides", "Fluoroquinolones"]
 allergies = st.multiselect("Allergies", options=allergy_options)
+other_allergy = ""
 if "Other" in allergies or st.checkbox("Other allergy not listed?"):
     other_allergy = st.text_input("Specify other allergy")
 
