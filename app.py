@@ -1,9 +1,10 @@
 import streamlit as st
 import openai
 import os
+from openai import OpenAI
 
-# Set your OpenAI API key here or as an environment variable
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Initialize OpenAI client
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 st.set_page_config(page_title="AIMA - CAP Module", layout="centered")
 st.title("🧠 AIMA: AI Infection Management Assistant")
@@ -103,7 +104,7 @@ if st.button("🔘 Submit"):
     """
 
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are an infectious diseases assistant supporting CAP management. Use IDSA/ATS guidelines and always remind the user that clinical discretion is essential."},
@@ -112,7 +113,8 @@ if st.button("🔘 Submit"):
             temperature=0.3
         )
 
-        st.markdown(response["choices"][0]["message"]["content"])
+        st.markdown(response.choices[0].message.content)
 
     except Exception as e:
         st.error(f"Error generating AI response: {e}")
+
