@@ -109,6 +109,9 @@ if st.button("🔘 Submit"):
     Please:
     1. List the most likely infectious diagnoses with confidence level (e.g., high/moderate/low)
     2. Recommend empiric antibiotic therapy including drug, dose, and route
+       - If the patient has a penicillin allergy, do NOT default to vancomycin or fluoroquinolones unless warranted
+       - Consider cephalosporins in non-anaphylactic PCN allergies
+       - Always follow IDSA guideline-based recommendations
     3. Flag any stewardship or safety concerns based on patient data
     4. List potential non-infectious differentials
     5. Provide up to 3 clickable guideline citations (IDSA preferred)
