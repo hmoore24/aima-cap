@@ -49,9 +49,12 @@ col1, col2 = st.columns(2)
 with col1:
     wbc = st.text_input("WBC")
     procalcitonin = st.text_input("Procalcitonin")
+    bmp = st.text_area("Basic Metabolic Panel (BMP)")
+    lfts = st.text_area("Liver Enzymes (AST/ALT/ALP/Tbili)")
     blood_cultures = st.text_area("Blood Cultures")
 with col2:
     rpp = st.text_area("Respiratory Pathogen Panel (BioFire)")
+    other_labs = st.text_area("Other Labs")
     cxr_summary = st.text_area("CXR / CT Summary")
 
 st.markdown("---")
@@ -72,31 +75,44 @@ if st.button("🔘 Submit"):
 
     # Compose prompt
     user_prompt = f"""
-    A {age}-year-old {sex} presents with {', '.join(symptoms)}.
+    A {age}-year-old {sex} presents with the following:
 
-    Vitals: Temp {temp}, HR {hr}, RR {rr}, BP {bp}, O2 Sat {o2}
-    Physical exam: {exam}
-    PMH: {setting}
-    Allergies: {', '.join(allergies)} {f"Other: {other_allergy}" if other_allergy else ""}
+    📝 Clinical Presentation:
+    {', '.join(symptoms)}
 
-    Labs:
+    🩺 Physical Exam:
+    {exam}
+
+    🧪 Lab Results:
     - WBC: {wbc}
     - Procalcitonin: {procalcitonin}
-    - Blood Cultures: {blood_cultures}
-    - Respiratory Pathogen Panel: {rpp}
-    - Imaging: {cxr_summary}
+    - BMP: {bmp}
+    - Liver Enzymes: {lfts}
+    - Respiratory Pathogen Panel (multiplex PCR): {rpp}
+    - Other labs: {other_labs}
 
-    Microbiology:
+    🖼️ Imaging Summary:
+    {cxr_summary}
+
+    🦠 Microbiologic History:
     - Previous Sputum Cultures: {sputum}
     - Prior Resistant Organisms: {resistant_orgs}
 
+    ⚠️ Allergies:
+    {', '.join(allergies)} {f"Other: {other_allergy}" if other_allergy else ""}
+
+    🏥 Setting:
+    {setting}
+
+    ---
+
     Please:
-    1. Estimate CURB-65 score
-    2. Provide diagnosis confidence
-    3. Recommend empiric antibiotics (dose + duration)
-    4. Flag stewardship/safety concerns
-    5. Suggest differentials
-    6. Include disclaimer
+    1. List the most likely infectious diagnoses with confidence level (e.g., high/moderate/low)
+    2. Recommend empiric antibiotic therapy including drug, dose, and route
+    3. Flag any stewardship or safety concerns based on patient data
+    4. List potential non-infectious differentials
+    5. Provide up to 3 clickable guideline citations (IDSA preferred)
+    6. Include a clinical disclaimer reminding the user to apply their judgment
     """
 
     try:
@@ -106,7 +122,7 @@ if st.button("🔘 Submit"):
         response = client.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "You are an infectious diseases assistant supporting CAP management. Use IDSA/ATS guidelines and always remind the user that clinical discretion is essential."},
+                {"role": "system", "content": "You are an infectious diseases assistant supporting infection syndrome diagnosis and treatment. Use IDSA guidelines where applicable and always remind the user that clinical discretion is essential."},
                 {"role": "user", "content": user_prompt}
             ],
             temperature=0.3
@@ -116,4 +132,3 @@ if st.button("🔘 Submit"):
 
     except Exception as e:
         st.error(f"Error generating AI response: {e}")
-
