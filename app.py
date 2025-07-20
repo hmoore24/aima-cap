@@ -2,9 +2,9 @@ import streamlit as st
 import openai
 from openai import OpenAI
 
-st.set_page_config(page_title="AIMA - CAP Module", layout="centered")
+st.set_page_config(page_title="AIMA - Infection Management", layout="centered")
 st.title("🧠 AIMA: AI Infection Management Assistant")
-st.subheader("🚨 Community-Acquired Pneumonia (CAP) Module")
+st.subheader("🩺 Multi-Syndrome Evaluation Tool")
 
 st.markdown("---")
 
@@ -14,6 +14,11 @@ with col1:
     age = st.number_input("Age", min_value=0, max_value=120, step=1)
 with col2:
     sex = st.radio("Sex", ["Male", "Female", "Other"])
+
+suspected_focus = st.selectbox(
+    "Suspected Infection Focus (optional)",
+    ["Unspecified", "Pulmonary", "Urinary", "Abdominal", "CNS", "Skin/Soft Tissue", "Bloodstream", "Other"]
+)
 
 symptoms = st.multiselect(
     "Symptoms",
@@ -66,7 +71,7 @@ resistant_orgs = st.text_area("Prior Resistant Organisms (if any)")
 st.markdown("---")
 
 st.header("📍 Setting")
-setting = st.radio("Patient Location", ["Outpatient", "ER", "Inpatient"])
+setting = st.radio("Patient Location", ["Outpatient", "ER", "Inpatient", "ICU"])
 
 st.markdown("---")
 
@@ -76,6 +81,8 @@ if st.button("🔘 Submit"):
     # Compose prompt
     user_prompt = f"""
     A {age}-year-old {sex} presents with the following:
+
+    Suspected infection focus: {suspected_focus}
 
     📝 Clinical Presentation:
     {', '.join(symptoms)}
@@ -125,7 +132,7 @@ if st.button("🔘 Submit"):
         response = client.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "You are an infectious diseases assistant supporting infection syndrome diagnosis and treatment. Use IDSA guidelines where applicable and always remind the user that clinical discretion is essential."},
+                {"role": "system", "content": "You are an infectious diseases assistant supporting infection syndrome diagnosis and treatment. Use IDSA guidelines where applicable. Evaluate for any infection syndrome, not just CAP. Adjust your assessment based on clinical setting (ED, outpatient, inpatient, ICU) and suspected site if given. Always remind the user that clinical discretion is essential."},
                 {"role": "user", "content": user_prompt}
             ],
             temperature=0.3
