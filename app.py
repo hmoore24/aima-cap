@@ -20,13 +20,24 @@ suspected_focus = st.selectbox(
     ["Unspecified", "Pulmonary", "Urinary", "Abdominal", "CNS", "Skin/Soft Tissue", "Bloodstream", "Other"]
 )
 
-symptoms = st.multiselect(
-    "Symptoms",
-    [
-        "Productive cough", "Non-productive cough", "Fever", "Chills",
-        "Shortness of breath", "Wheezing", "Chest pain", "Fatigue"
-    ]
-)
+focus_symptom_map = {
+    "Pulmonary": ["Fever", "Chills", "Fatigue", "Productive cough", "Non-productive cough", "Shortness of breath", "Wheezing", "Chest pain"],
+    "Urinary": ["Fever", "Chills", "Dysuria", "Urinary frequency", "Urinary urgency", "Purulent discharge", "Flank pain"],
+    "Abdominal": ["Fever", "Chills", "Abdominal pain", "Nausea", "Vomiting", "Diarrhea"],
+    "CNS": ["Fever", "Confusion", "Headache", "Vision changes", "Neck stiffness"],
+    "Skin/Soft Tissue": ["Fever", "Chills", "Rash", "Erythema", "Leg swelling", "Warmth", "Drainage"],
+    "Bloodstream": ["Fever", "Chills", "Fatigue", "Hypotension", "Confusion"],
+    "Other": ["Fever", "Chills", "Fatigue"],
+    "Unspecified": ["Fever", "Chills", "Fatigue"]
+}
+
+suggested_symptoms = focus_symptom_map.get(suspected_focus, focus_symptom_map["Unspecified"])
+
+st.markdown("### Suggested Symptoms")
+symptoms = st.multiselect("Select applicable symptoms:", options=suggested_symptoms)
+
+st.markdown("### Additional Symptoms")
+additional_symptoms = st.text_area("List any additional symptoms not covered above")
 
 st.markdown("**Vitals**")
 col1, col2, col3 = st.columns(3)
@@ -78,6 +89,8 @@ st.markdown("---")
 if st.button("🔘 Submit"):
     st.subheader("📡 AI Response")
 
+    combined_symptoms = symptoms + ([s.strip() for s in additional_symptoms.split(',')] if additional_symptoms else [])
+
     # Compose prompt
     user_prompt = f"""
     A {age}-year-old {sex} presents with the following:
@@ -85,7 +98,7 @@ if st.button("🔘 Submit"):
     Suspected infection focus: {suspected_focus}
 
     📝 Clinical Presentation:
-    {', '.join(symptoms)}
+    {', '.join(combined_symptoms)}
 
     🩺 Physical Exam:
     {exam}
