@@ -81,6 +81,8 @@ if setting in ["ER", "Inpatient", "ICU"]:
     sirs_hr = st.text_input("HR > 90 bpm (Yes/No)")
     sirs_rr = st.text_input("RR > 20 or PaCO₂ < 32 mmHg (Yes/No)")
     sirs_wbc = st.text_input("WBC > 12k or < 4k or >10% bands (Yes/No)")
+
+st.markdown("---")
     
 allergy_options = ["Penicillin", "Cephalosporins", "Macrolides", "Fluoroquinolones"]
 allergies = st.multiselect("Allergies", options=allergy_options)
