@@ -83,7 +83,7 @@ if setting in ["ER", "Inpatient", "ICU"]:
     sirs_wbc = st.text_input("WBC > 12k or < 4k or >10% bands (Yes/No)")
 
 st.markdown("---")
-    
+
 allergy_options = ["Penicillin", "Cephalosporins", "Macrolides", "Fluoroquinolones"]
 allergies = st.multiselect("Allergies", options=allergy_options)
 other_allergy = ""
@@ -142,7 +142,6 @@ if st.button("🔘 Submit"):
 
     combined_symptoms = symptoms + ([s.strip() for s in additional_symptoms.split(',')] if additional_symptoms else [])
 
-    # Compose prompt
     user_prompt = f"""
     A {age}-year-old {sex} presents with the following:
 
@@ -193,7 +192,6 @@ if st.button("🔘 Submit"):
     """
 
     try:
-        # Load OpenAI client safely inside button action
         client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
         response = client.chat.completions.create(
@@ -205,9 +203,8 @@ if st.button("🔘 Submit"):
             temperature=0.3
         )
 
-       output = response.choices[0].message.content
+        output = response.choices[0].message.content
 
-        # Insert section headers into the raw LLM response
         output = output.replace("1.", "### 🧠 Most Likely Infectious Diagnoses\n\n1.")
         output = output.replace("2.", "### 💊 Empiric Antibiotic Recommendations\n\n2.")
         output = output.replace("3.", "### 🛡️ Stewardship & Safety Concerns\n\n3.")
@@ -219,4 +216,3 @@ if st.button("🔘 Submit"):
 
     except Exception as e:
         st.error(f"Error generating AI response: {e}")
-
