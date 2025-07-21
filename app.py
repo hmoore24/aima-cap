@@ -205,7 +205,17 @@ if st.button("🔘 Submit"):
             temperature=0.3
         )
 
-        st.markdown(response.choices[0].message.content)
+ output = response.choices[0].message.content
+
+# Insert section headers into the raw LLM response (if not already structured)
+output = output.replace("1.", "### 🧠 Most Likely Infectious Diagnoses\n\n1.")
+output = output.replace("2.", "### 💊 Empiric Antibiotic Recommendations\n\n2.")
+output = output.replace("3.", "### 🛡️ Stewardship & Safety Concerns\n\n3.")
+output = output.replace("4.", "### 🩺 Non-Infectious Differentials\n\n4.")
+output = output.replace("5.", "### 📚 Guideline References\n\n5.")
+output = output.replace("6.", "### ⚠️ Clinical Disclaimer\n\n6.")
+
+st.markdown(output)
 
     except Exception as e:
         st.error(f"Error generating AI response: {e}")
