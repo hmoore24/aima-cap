@@ -65,13 +65,32 @@ col1, col2 = st.columns(2)
 with col1:
     wbc = st.text_input("WBC")
     procalcitonin = st.text_input("Procalcitonin")
-    bmp = st.text_area("Basic Metabolic Panel (BMP)")
-    lfts = st.text_area("Liver Enzymes (AST/ALT/ALP/Tbili)")
-    blood_cultures = st.text_area("Blood Cultures")
+    na = st.text_input("Sodium")
+    k = st.text_input("Potassium")
+    cl = st.text_input("Chloride")
+    bicarb = st.text_input("Bicarbonate")
+    bun = st.text_input("BUN")
+    creatinine = st.text_input("Creatinine")
+    glucose = st.text_input("Glucose")
 with col2:
+    ast = st.text_input("AST")
+    alt = st.text_input("ALT")
+    alp = st.text_input("ALP")
+    tbili = st.text_input("Total Bilirubin")
     rpp = st.text_area("Respiratory Pathogen Panel (BioFire)")
     other_labs = st.text_area("Other Labs")
     cxr_summary = st.text_area("CXR / CT Summary")
+
+st.subheader("🧪 Urinalysis")
+leuk = st.text_input("Leukocyte Esterase")
+nitrites = st.text_input("Nitrites")
+urine_wbc = st.text_input("WBCs in urine")
+squamous_cells = st.text_input("Squamous cells")
+urine_culture = st.text_area("Urine Culture (with reflex)")
+
+st.subheader("🧪 Body Fluid Culture")
+fluid_source = st.selectbox("Fluid Collection Site", ["", "Pleural fluid", "Peritoneal fluid", "CSF", "Joint space"])
+fluid_culture = st.text_area("Body Fluid Culture Results")
 
 st.markdown("---")
 
@@ -106,9 +125,12 @@ if st.button("🔘 Submit"):
     🧪 Lab Results:
     - WBC: {wbc}
     - Procalcitonin: {procalcitonin}
-    - BMP: {bmp}
-    - Liver Enzymes: {lfts}
+    - BMP: Na {na}, K {k}, Cl {cl}, Bicarb {bicarb}, BUN {bun}, Cr {creatinine}, Glucose {glucose}
+    - Liver Enzymes: AST {ast}, ALT {alt}, ALP {alp}, Total Bili {tbili}
     - Respiratory Pathogen Panel (multiplex PCR): {rpp}
+    - Urinalysis: LE {leuk}, Nitrites {nitrites}, WBCs {urine_wbc}, Squamous cells {squamous_cells}
+    - Urine Culture: {urine_culture}
+    - Body Fluid Culture from {fluid_source}: {fluid_culture}
     - Other labs: {other_labs}
 
     🖼️ Imaging Summary:
@@ -155,3 +177,4 @@ if st.button("🔘 Submit"):
 
     except Exception as e:
         st.error(f"Error generating AI response: {e}")
+
