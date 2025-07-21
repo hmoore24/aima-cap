@@ -31,10 +31,14 @@ focus_symptom_map = {
     "Unspecified": ["Fever", "Chills", "Fatigue"]
 }
 
-suggested_symptoms = focus_symptom_map.get(suspected_focus, focus_symptom_map["Unspecified"])
+if "symptom_options" not in st.session_state:
+    st.session_state.symptom_options = focus_symptom_map.get(suspected_focus, focus_symptom_map["Unspecified"])
+
+if suspected_focus:
+    st.session_state.symptom_options = focus_symptom_map.get(suspected_focus, focus_symptom_map["Unspecified"])
 
 st.markdown("### Suggested Symptoms")
-symptoms = st.multiselect("Select applicable symptoms:", options=suggested_symptoms)
+symptoms = st.multiselect("Select applicable symptoms:", options=st.session_state.symptom_options)
 
 st.markdown("### Additional Symptoms")
 additional_symptoms = st.text_area("List any additional symptoms not covered above")
@@ -52,6 +56,32 @@ with col3:
 
 exam = st.text_area("Physical Exam Findings")
 
+st.markdown("---")
+
+st.header("📈 Scoring Tools")
+if suspected_focus in ["Pulmonary", "Bloodstream"]:
+    st.markdown("#### CURB-65")
+    curb_confusion = st.checkbox("Confusion")
+    curb_bun = st.text_input("BUN > 19 mg/dL (Yes/No)")
+    curb_rr = st.text_input("RR ≥ 30 (Yes/No)")
+    curb_bp = st.text_input("SBP < 90 or DBP ≤ 60 (Yes/No)")
+    curb_age = age >= 65
+    st.markdown(f"**CURB-65 Age Criteria:** {'Yes' if curb_age else 'No'}")
+
+setting = st.selectbox("Patient Location", ["Outpatient", "ER", "Inpatient", "ICU"])
+
+if setting in ["ER", "Inpatient", "ICU"]:
+    st.markdown("#### qSOFA")
+    qsofa_rr = st.text_input("RR ≥ 22 (Yes/No)")
+    qsofa_altered = st.checkbox("Altered mental status")
+    qsofa_sbp = st.text_input("SBP ≤ 100 mmHg (Yes/No)")
+
+    st.markdown("#### SIRS Criteria")
+    sirs_temp = st.text_input("Temp >38°C or <36°C (Yes/No)")
+    sirs_hr = st.text_input("HR > 90 bpm (Yes/No)")
+    sirs_rr = st.text_input("RR > 20 or PaCO₂ < 32 mmHg (Yes/No)")
+    sirs_wbc = st.text_input("WBC > 12k or < 4k or >10% bands (Yes/No)")
+    
 allergy_options = ["Penicillin", "Cephalosporins", "Macrolides", "Fluoroquinolones"]
 allergies = st.multiselect("Allergies", options=allergy_options)
 other_allergy = ""
