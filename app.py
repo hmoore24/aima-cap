@@ -5,6 +5,8 @@ import pandas as pd
 from datetime import datetime
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import base64
+import json
 
 st.set_page_config(page_title="AIMA - Infection Management", layout="centered")
 st.title("🧠 AIMA: AI Infection Management Assistant")
@@ -14,16 +16,11 @@ st.markdown("---")
 
 # Google Sheets setup
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-import base64
-import json
-
 gspread_json = base64.b64decode(st.secrets["GSPREAD_CREDENTIALS"]).decode("utf-8")
 creds_dict = json.loads(gspread_json)
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
-
 client_gs = gspread.authorize(creds)
 sheet = client_gs.open("AIMA Feedback Log").sheet1
-
 st.markdown("---")
 
 st.header("📋 Patient Data Input")
