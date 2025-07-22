@@ -253,3 +253,4 @@ if st.button("🔘 Submit"):
 
     except Exception as e:
         st.error(f"Error generating AI response: {e}")
+
