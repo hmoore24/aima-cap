@@ -20,7 +20,7 @@ gspread_json = base64.b64decode(st.secrets["GSPREAD_CREDENTIALS"]).decode("utf-8
 creds_dict = json.loads(gspread_json)
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client_gs = gspread.authorize(creds)
-sheet = client_gs.open("AIMA Feedback Log").sheet1
+sheet = client_gs.open_by_key("1UJ6nTTKKzmbtuX8O1ggkCLxB6CU7BuPuy6H4bYwoTPw").sheet1
 
 # Input UI begins
 col1, col2 = st.columns(2)
