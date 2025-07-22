@@ -1,10 +1,22 @@
 import streamlit as st
 import openai
 from openai import OpenAI
+import pandas as pd
+from datetime import datetime
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 st.set_page_config(page_title="AIMA - Infection Management", layout="centered")
 st.title("🧠 AIMA: AI Infection Management Assistant")
 st.subheader("🩺 Multi-Syndrome Evaluation Tool")
+
+st.markdown("---")
+
+# Google Sheets setup
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+creds = ServiceAccountCredentials.from_json_keyfile_name("gspread_credentials.json", scope)
+client_gs = gspread.authorize(creds)
+sheet = client_gs.open("AIMA Feedback Log").sheet1
 
 st.markdown("---")
 
@@ -213,6 +225,28 @@ if st.button("🔘 Submit"):
         output = output.replace("6.", "### ⚠️ Clinical Disclaimer\n\n6.")
 
         st.markdown(output)
+
+        st.markdown("---")
+        st.header("📝 Clinician Feedback")
+        usefulness = st.radio("Was this output clinically useful?", ["Yes", "Somewhat", "No"])
+        errors = st.text_area("Were there any inaccuracies or safety concerns?")
+        suggestions = st.text_area("How could this tool be improved?")
+
+        if st.button("Submit Feedback"):
+            feedback_row = [
+                datetime.now().isoformat(),
+                age,
+                sex,
+                suspected_focus,
+                ", ".join(combined_symptoms),
+                exam,
+                output,
+                usefulness,
+                errors,
+                suggestions
+            ]
+            sheet.append_row(feedback_row)
+            st.success("✅ Feedback submitted to Google Sheets. Thank you!")
 
     except Exception as e:
         st.error(f"Error generating AI response: {e}")
