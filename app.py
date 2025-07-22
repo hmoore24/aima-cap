@@ -14,7 +14,13 @@ st.markdown("---")
 
 # Google Sheets setup
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("gspread_credentials.json", scope)
+import base64
+import json
+
+gspread_json = base64.b64decode(st.secrets["GSPREAD_CREDENTIALS"]).decode("utf-8")
+creds_dict = json.loads(gspread_json)
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+
 client_gs = gspread.authorize(creds)
 sheet = client_gs.open("AIMA Feedback Log").sheet1
 
