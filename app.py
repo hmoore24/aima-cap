@@ -21,9 +21,8 @@ creds_dict = json.loads(gspread_json)
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client_gs = gspread.authorize(creds)
 sheet = client_gs.open("AIMA Feedback Log").sheet1
-st.markdown("---")
 
-st.header("📋 Patient Data Input")
+# Input UI begins
 col1, col2 = st.columns(2)
 with col1:
     age = st.number_input("Age", min_value=0, max_value=120, step=1)
@@ -71,33 +70,38 @@ with col3:
 
 exam = st.text_area("Physical Exam Findings")
 
-st.markdown("---")
-
-st.header("📈 Scoring Tools")
-if suspected_focus in ["Pulmonary", "Bloodstream"]:
-    st.markdown("#### CURB-65")
-    curb_confusion = st.checkbox("Confusion")
-    curb_bun = st.text_input("BUN > 19 mg/dL (Yes/No)")
-    curb_rr = st.text_input("RR ≥ 30 (Yes/No)")
-    curb_bp = st.text_input("SBP < 90 or DBP ≤ 60 (Yes/No)")
-    curb_age = age >= 65
-    st.markdown(f"**CURB-65 Age Criteria:** {'Yes' if curb_age else 'No'}")
-
 setting = st.selectbox("Patient Location", ["Outpatient", "ER", "Inpatient", "ICU"])
 
-if setting in ["ER", "Inpatient", "ICU"]:
-    st.markdown("#### qSOFA")
-    qsofa_rr = st.text_input("RR ≥ 22 (Yes/No)")
-    qsofa_altered = st.checkbox("Altered mental status")
-    qsofa_sbp = st.text_input("SBP ≤ 100 mmHg (Yes/No)")
+# Labs and imaging
+wbc = st.text_input("WBC")
+procalcitonin = st.text_input("Procalcitonin")
+na = st.text_input("Sodium")
+k = st.text_input("Potassium")
+cl = st.text_input("Chloride")
+bicarb = st.text_input("Bicarbonate")
+bun = st.text_input("BUN")
+creatinine = st.text_input("Creatinine")
+glucose = st.text_input("Glucose")
+ast = st.text_input("AST")
+alt = st.text_input("ALT")
+alp = st.text_input("ALP")
+tbili = st.text_input("Total Bilirubin")
+rpp = st.text_area("Respiratory Pathogen Panel (BioFire)")
+other_labs = st.text_area("Other Labs")
+cxr_summary = st.text_area("CXR / CT Summary")
 
-    st.markdown("#### SIRS Criteria")
-    sirs_temp = st.text_input("Temp >38°C or <36°C (Yes/No)")
-    sirs_hr = st.text_input("HR > 90 bpm (Yes/No)")
-    sirs_rr = st.text_input("RR > 20 or PaCO₂ < 32 mmHg (Yes/No)")
-    sirs_wbc = st.text_input("WBC > 12k or < 4k or >10% bands (Yes/No)")
+# Microbiology and cultures
+leuk = st.text_input("Leukocyte Esterase")
+nitrites = st.text_input("Nitrites")
+urine_wbc = st.text_input("WBCs in urine")
+squamous_cells = st.text_input("Squamous cells")
+urine_culture = st.text_area("Urine Culture (with reflex)")
 
-st.markdown("---")
+fluid_source = st.selectbox("Fluid Collection Site", ["", "Pleural fluid", "Peritoneal fluid", "CSF", "Joint space"])
+fluid_culture = st.text_area("Body Fluid Culture Results")
+
+sputum = st.text_area("Previous Sputum Cultures")
+resistant_orgs = st.text_area("Prior Resistant Organisms (if any)")
 
 allergy_options = ["Penicillin", "Cephalosporins", "Macrolides", "Fluoroquinolones"]
 allergies = st.multiselect("Allergies", options=allergy_options)
@@ -105,53 +109,7 @@ other_allergy = ""
 if "Other" in allergies or st.checkbox("Other allergy not listed?"):
     other_allergy = st.text_input("Specify other allergy")
 
-st.markdown("---")
-
-st.header("📊 Labs & Imaging")
-col1, col2 = st.columns(2)
-with col1:
-    wbc = st.text_input("WBC")
-    procalcitonin = st.text_input("Procalcitonin")
-    na = st.text_input("Sodium")
-    k = st.text_input("Potassium")
-    cl = st.text_input("Chloride")
-    bicarb = st.text_input("Bicarbonate")
-    bun = st.text_input("BUN")
-    creatinine = st.text_input("Creatinine")
-    glucose = st.text_input("Glucose")
-with col2:
-    ast = st.text_input("AST")
-    alt = st.text_input("ALT")
-    alp = st.text_input("ALP")
-    tbili = st.text_input("Total Bilirubin")
-    rpp = st.text_area("Respiratory Pathogen Panel (BioFire)")
-    other_labs = st.text_area("Other Labs")
-    cxr_summary = st.text_area("CXR / CT Summary")
-
-st.subheader("🧪 Urinalysis")
-leuk = st.text_input("Leukocyte Esterase")
-nitrites = st.text_input("Nitrites")
-urine_wbc = st.text_input("WBCs in urine")
-squamous_cells = st.text_input("Squamous cells")
-urine_culture = st.text_area("Urine Culture (with reflex)")
-
-st.subheader("🧪 Body Fluid Culture")
-fluid_source = st.selectbox("Fluid Collection Site", ["", "Pleural fluid", "Peritoneal fluid", "CSF", "Joint space"])
-fluid_culture = st.text_area("Body Fluid Culture Results")
-
-st.markdown("---")
-
-st.header("🦠 Microbiologic History")
-sputum = st.text_area("Previous Sputum Cultures")
-resistant_orgs = st.text_area("Prior Resistant Organisms (if any)")
-
-st.markdown("---")
-
-st.header("📍 Setting")
-setting = st.radio("Patient Location", ["Outpatient", "ER", "Inpatient", "ICU"])
-
-st.markdown("---")
-
+# Submit and process AI request
 if st.button("🔘 Submit"):
     st.subheader("📡 AI Response")
 
@@ -219,14 +177,6 @@ if st.button("🔘 Submit"):
         )
 
         output = response.choices[0].message.content
-
-        output = output.replace("1.", "### 🧠 Most Likely Infectious Diagnoses\n\n1.")
-        output = output.replace("2.", "### 💊 Empiric Antibiotic Recommendations\n\n2.")
-        output = output.replace("3.", "### 🛡️ Stewardship & Safety Concerns\n\n3.")
-        output = output.replace("4.", "### 🩺 Non-Infectious Differentials\n\n4.")
-        output = output.replace("5.", "### 📚 Guideline References\n\n5.")
-        output = output.replace("6.", "### ⚠️ Clinical Disclaimer\n\n6.")
-
         st.markdown(output)
 
         st.markdown("---")
@@ -253,4 +203,3 @@ if st.button("🔘 Submit"):
 
     except Exception as e:
         st.error(f"Error generating AI response: {e}")
-
